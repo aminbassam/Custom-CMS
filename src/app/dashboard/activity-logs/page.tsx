@@ -1,17 +1,11 @@
 import { Panel } from "@/components/ui/panel";
 import { requireDashboardPermission } from "@/lib/auth/session";
-import { prisma } from "@/lib/prisma";
+import { getDashboardActivityLogs } from "@/lib/dashboard-data";
 
 export default async function DashboardActivityLogsPage() {
   await requireDashboardPermission("activity:view");
 
-  const logs = await prisma.activityLog.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 50,
-    include: {
-      actorUser: true
-    }
-  });
+  const logs = await getDashboardActivityLogs();
 
   return (
     <Panel>

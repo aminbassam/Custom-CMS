@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import Link from "next/link";
 
 import { Panel } from "@/components/ui/panel";
@@ -25,7 +26,7 @@ export default async function BlogCategoryPage({ params }: { params: Promise<{ s
           <Panel key={post.id}>
             <h2 className="font-display text-2xl font-semibold text-ink">{post.title}</h2>
             <p className="mt-3 text-slate-600">{post.excerpt}</p>
-            <Link href={`/blog/${post.slug}`} className="mt-6 inline-flex text-sm font-semibold text-clay">
+            <Link href={`/blog/${post.slug}` as Route} className="mt-6 inline-flex text-sm font-semibold text-clay">
               Read article
             </Link>
           </Panel>

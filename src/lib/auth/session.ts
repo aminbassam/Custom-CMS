@@ -15,6 +15,9 @@ export async function requireDashboardUser() {
 
 export async function requireDashboardPermission(permission: PermissionKey) {
   const user = await requireDashboardUser();
+  if (user.roles?.includes("admin")) {
+    return user;
+  }
   await assertPermission(user.id, permission);
   return user;
 }

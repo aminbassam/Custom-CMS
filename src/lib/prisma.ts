@@ -8,6 +8,11 @@ declare global {
 export const prisma =
   global.prisma ??
   new PrismaClient({
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL ?? "postgresql://postgres:postgres@localhost:5432/cms_website"
+      }
+    },
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"]
   });
 

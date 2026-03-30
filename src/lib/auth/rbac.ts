@@ -1,5 +1,6 @@
 import { cache } from "react";
 
+import { hasDatabaseConfig, isDemoMode } from "@/lib/runtime";
 import { prisma } from "@/lib/prisma";
 
 export type PermissionKey =
@@ -15,31 +16,41 @@ export type PermissionKey =
   | "exports:manage";
 
 export const hasPermission = cache(async (userId: string, permissionKey: PermissionKey) => {
+  if (isDemoMode && userId === "demo-admin") {
+    return true;
+  }
+
+  if (!hasDatabaseConfig) {
+    return false;
+  }
+
   const [resource, action] = permissionKey.split(":");
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: {
-      roles: {
-        include: {
-          role: {
-            include: {
-              rolePermissions: {
-                include: {
-                  permission: true
+  const user = await prisma.user
+    .findUnique({
+      where: { id: userId },
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                rolePermissions: {
+                  include: {
+                    permission: true
+                  }
                 }
               }
             }
           }
-        }
-      },
-      userPermissions: {
-        include: {
-          permission: true
+        },
+        userPermissions: {
+          include: {
+            permission: true
+          }
         }
       }
-    }
-  });
+    })
+    .catch(() => null);
 
   if (!user || user.status !== "active") return false;
 

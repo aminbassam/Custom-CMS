@@ -41,6 +41,7 @@ export type Testimonial = {
   clientName: string;
   clientTitle?: string;
   company?: string;
+  avatarUrl?: string;
 };
 
 export type GalleryItem = {
@@ -73,7 +74,10 @@ export type ServicePage = SeoFields & {
   title: string;
   slug: string;
   summary: string;
+  featuredImage?: ContentfulAsset;
   overview?: Document;
+  featureList?: string[];
+  pricingSummary?: string;
   blocks: ContentBlock[];
   faqItems?: FaqItem[];
   relatedServices?: Array<Pick<ServicePage, "id" | "title" | "slug" | "summary">>;
@@ -89,6 +93,7 @@ export type BlogPost = SeoFields & {
   publishedAt: string;
   updatedAt?: string;
   content: Document;
+  readTime?: string;
   category?: { title: string; slug: string };
   tags?: Array<{ title: string; slug: string }>;
 };
@@ -110,4 +115,5 @@ export type SiteSettings = {
   defaultOgImage?: ContentfulAsset;
   supportEmail?: string;
   phoneNumber?: string;
+  address?: string;
 };

@@ -4,6 +4,17 @@
 
 :root {
   color-scheme: light;
+  --font-sans:
+    "Source Sans Pro",
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  --font-display:
+    "Avenir Next",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
 }
 
 html {

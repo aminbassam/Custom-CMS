@@ -12,6 +12,11 @@ export default function DashboardLoginPage() {
       <form action={formAction} className="w-full max-w-md rounded-[2rem] bg-white p-8 shadow-panel">
         <p className="text-sm uppercase tracking-[0.2em] text-clay">Client Dashboard</p>
         <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight text-ink">Sign in</h1>
+        {process.env.NODE_ENV !== "production" ? (
+          <div className="mt-4 rounded-2xl bg-sky-50 p-4 text-sm text-sky-900">
+            Local demo login: <strong>admin@example.com</strong> / <strong>ChangeMe123!</strong>
+          </div>
+        ) : null}
         <div className="mt-8 space-y-4">
           <label className="block text-sm font-medium text-slate-700">
             Email

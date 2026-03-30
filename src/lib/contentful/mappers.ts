@@ -1,5 +1,3 @@
-import type { Asset, Entry } from "contentful";
-
 import type {
   BlogPost,
   ContentBlock,
@@ -13,56 +11,57 @@ import type {
   Testimonial
 } from "@/lib/contentful/types";
 
-function mapAsset(asset?: Asset<any, any>): ContentfulAsset | undefined {
-  const file = asset?.fields.file as any;
+function mapAsset(asset: any): ContentfulAsset | undefined {
+  const file = asset?.fields?.file;
   if (!file?.url) return undefined;
 
   return {
-    title: asset?.fields.title,
-    description: asset?.fields.description,
+    title: asset?.fields?.title,
+    description: asset?.fields?.description,
     url: `https:${file.url}`,
     width: file.details?.image?.width,
     height: file.details?.image?.height
   };
 }
 
-function mapFaq(entry: Entry<any>): FaqItem {
+function mapFaq(entry: any): FaqItem {
   return {
-    id: entry.sys.id,
-    question: entry.fields.question,
-    answer: entry.fields.answer
+    id: entry?.sys?.id ?? crypto.randomUUID(),
+    question: entry?.fields?.question ?? "",
+    answer: entry?.fields?.answer
   };
 }
 
-export function mapTestimonial(entry: Entry<any>): Testimonial {
+export function mapTestimonial(entry: any): Testimonial {
   return {
-    id: entry.sys.id,
-    quote: entry.fields.quote,
-    clientName: entry.fields.clientName,
-    clientTitle: entry.fields.clientTitle,
-    company: entry.fields.company
+    id: entry?.sys?.id ?? crypto.randomUUID(),
+    quote: entry?.fields?.quote ?? "",
+    clientName: entry?.fields?.clientName ?? "",
+    clientTitle: entry?.fields?.clientTitle ?? undefined,
+    company: entry?.fields?.company ?? undefined,
+    avatarUrl: mapAsset(entry?.fields?.avatar)?.url
   };
 }
 
-export function mapGallery(entry: Entry<any>): Gallery {
+export function mapGallery(entry: any): Gallery {
   return {
-    id: entry.sys.id,
-    title: entry.fields.title,
-    slug: entry.fields.slug,
-    description: entry.fields.description,
+    id: entry?.sys?.id ?? crypto.randomUUID(),
+    title: entry?.fields?.title ?? "",
+    slug: entry?.fields?.slug ?? "",
+    description: entry?.fields?.description ?? undefined,
     items:
-      entry.fields.items?.map((item: Entry<any>) => ({
-        id: item.sys.id,
-        title: item.fields.title,
-        media: mapAsset(item.fields.media)!,
-        altText: item.fields.altText,
-        caption: item.fields.caption
+      entry?.fields?.items?.map((item: any) => ({
+        id: item?.sys?.id ?? crypto.randomUUID(),
+        title: item?.fields?.title ?? "",
+        media: mapAsset(item?.fields?.media)!,
+        altText: item?.fields?.altText ?? undefined,
+        caption: item?.fields?.caption ?? undefined
       })) ?? []
   };
 }
 
-export function mapBlock(entry: Entry<any>): ContentBlock {
-  const typename = entry.sys.contentType.sys.id;
+export function mapBlock(entry: any): ContentBlock {
+  const typename = entry?.sys?.contentType?.sys?.id;
 
   switch (typename) {
     case "heroBlock":
@@ -151,112 +150,118 @@ export function mapBlock(entry: Entry<any>): ContentBlock {
       };
     default:
       return {
-        id: entry.sys.id,
+        id: entry?.sys?.id ?? crypto.randomUUID(),
         __typename: "RichTextBlock",
         title: "Unsupported block",
         content: {
           nodeType: "document",
           data: {},
           content: []
-        }
+        } as any
       };
   }
 }
 
-function commonSeo(entry: Entry<any>) {
+function commonSeo(entry: any) {
   return {
-    seoTitle: entry.fields.seoTitle,
-    seoDescription: entry.fields.seoDescription,
-    canonicalUrl: entry.fields.canonicalUrl,
-    noIndex: entry.fields.noIndex,
-    ogImage: mapAsset(entry.fields.ogImage)
+    seoTitle: entry?.fields?.seoTitle ?? undefined,
+    seoDescription: entry?.fields?.seoDescription ?? undefined,
+    canonicalUrl: entry?.fields?.canonicalUrl ?? undefined,
+    noIndex: entry?.fields?.noIndex ?? undefined,
+    ogImage: mapAsset(entry?.fields?.ogImage)
   };
 }
 
-export function mapPage(entry: Entry<any>): ContentPage {
+export function mapPage(entry: any): ContentPage {
   return {
-    id: entry.sys.id,
-    title: entry.fields.title,
-    slug: entry.fields.slug,
-    excerpt: entry.fields.excerpt,
-    blocks: entry.fields.blocks?.map(mapBlock) ?? [],
-    faqItems: entry.fields.faqItems?.map(mapFaq) ?? [],
+    id: entry?.sys?.id ?? crypto.randomUUID(),
+    title: entry?.fields?.title ?? "",
+    slug: entry?.fields?.slug ?? "",
+    excerpt: entry?.fields?.excerpt ?? undefined,
+    blocks: entry?.fields?.blocks?.map(mapBlock) ?? [],
+    faqItems: entry?.fields?.faqItems?.map(mapFaq) ?? [],
     ...commonSeo(entry)
   };
 }
 
-export function mapService(entry: Entry<any>): ServicePage {
-  const bodyBlocks = entry.fields.bodyBlocks?.map(mapBlock) ?? [];
-  const heroBlock = entry.fields.heroBlock ? [mapBlock(entry.fields.heroBlock)] : [];
+export function mapService(entry: any): ServicePage {
+  const bodyBlocks = entry?.fields?.bodyBlocks?.map(mapBlock) ?? [];
+  const heroBlock = entry?.fields?.heroBlock ? [mapBlock(entry.fields.heroBlock)] : [];
 
   return {
-    id: entry.sys.id,
-    title: entry.fields.title,
-    slug: entry.fields.slug,
-    summary: entry.fields.summary,
-    overview: entry.fields.overview,
+    id: entry?.sys?.id ?? crypto.randomUUID(),
+    title: entry?.fields?.title ?? "",
+    slug: entry?.fields?.slug ?? "",
+    summary: entry?.fields?.summary ?? "",
+    featuredImage: mapAsset(entry?.fields?.featuredImage),
+    overview: entry?.fields?.overview ?? undefined,
+    pricingSummary: entry?.fields?.pricingSummary ?? undefined,
     blocks: [...heroBlock, ...bodyBlocks],
-    faqItems: entry.fields.faqItems?.map(mapFaq) ?? [],
+    faqItems: entry?.fields?.faqItems?.map(mapFaq) ?? [],
     relatedServices:
-      entry.fields.relatedServices?.map((service: Entry<any>) => ({
-        id: service.sys.id,
-        title: service.fields.title,
-        slug: service.fields.slug,
-        summary: service.fields.summary
+      entry?.fields?.relatedServices?.map((service: any) => ({
+        id: service?.sys?.id ?? crypto.randomUUID(),
+        title: service?.fields?.title ?? "",
+        slug: service?.fields?.slug ?? "",
+        summary: service?.fields?.summary ?? ""
       })) ?? [],
     ...commonSeo(entry)
   };
 }
 
-export function mapBlogPost(entry: Entry<any>): BlogPost {
+export function mapBlogPost(entry: any): BlogPost {
   return {
-    id: entry.sys.id,
-    title: entry.fields.title,
-    slug: entry.fields.slug,
-    excerpt: entry.fields.excerpt,
-    featuredImage: mapAsset(entry.fields.featuredImage),
-    authorName: entry.fields.authorName,
-    publishedAt: entry.fields.publishedAt,
-    updatedAt: entry.fields.updatedAt,
-    content: entry.fields.content,
-    category: entry.fields.category
+    id: entry?.sys?.id ?? crypto.randomUUID(),
+    title: entry?.fields?.title ?? "",
+    slug: entry?.fields?.slug ?? "",
+    excerpt: entry?.fields?.excerpt ?? "",
+    featuredImage: mapAsset(entry?.fields?.featuredImage),
+    authorName: entry?.fields?.authorName ?? undefined,
+    publishedAt: entry?.fields?.publishedAt ?? new Date().toISOString(),
+    updatedAt: entry?.fields?.updatedAt ?? undefined,
+    readTime: entry?.fields?.readingTimeMinutes
+      ? `${entry.fields.readingTimeMinutes} min read`
+      : undefined,
+    content: entry?.fields?.content,
+    category: entry?.fields?.category
       ? {
-          title: entry.fields.category.fields.title,
-          slug: entry.fields.category.fields.slug
+          title: entry.fields.category.fields.title ?? "",
+          slug: entry.fields.category.fields.slug ?? ""
         }
       : undefined,
     tags:
-      entry.fields.tags?.map((tag: Entry<any>) => ({
-        title: tag.fields.title,
-        slug: tag.fields.slug
+      entry?.fields?.tags?.map((tag: any) => ({
+        title: tag?.fields?.title ?? "",
+        slug: tag?.fields?.slug ?? ""
       })) ?? [],
     ...commonSeo(entry)
   };
 }
 
-export function mapLandingPage(entry: Entry<any>): LandingPage {
+export function mapLandingPage(entry: any): LandingPage {
   return {
-    id: entry.sys.id,
-    title: entry.fields.title,
-    slug: entry.fields.slug,
-    campaignKey: entry.fields.campaignKey,
+    id: entry?.sys?.id ?? crypto.randomUUID(),
+    title: entry?.fields?.title ?? "",
+    slug: entry?.fields?.slug ?? "",
+    campaignKey: entry?.fields?.campaignKey ?? undefined,
     blocks: [
-      ...(entry.fields.heroBlock ? [mapBlock(entry.fields.heroBlock)] : []),
-      ...(entry.fields.blocks?.map(mapBlock) ?? [])
+      ...(entry?.fields?.heroBlock ? [mapBlock(entry.fields.heroBlock)] : []),
+      ...(entry?.fields?.blocks?.map(mapBlock) ?? [])
     ],
-    faqItems: entry.fields.faqItems?.map(mapFaq) ?? [],
+    faqItems: entry?.fields?.faqItems?.map(mapFaq) ?? [],
     ...commonSeo(entry)
   };
 }
 
-export function mapSiteSettings(entry: Entry<any>): SiteSettings {
+export function mapSiteSettings(entry: any): SiteSettings {
   return {
-    siteName: entry.fields.siteName,
-    siteUrl: entry.fields.siteUrl,
-    defaultSeoTitle: entry.fields.defaultSeoTitle,
-    defaultSeoDescription: entry.fields.defaultSeoDescription,
-    defaultOgImage: mapAsset(entry.fields.defaultOgImage),
-    supportEmail: entry.fields.supportEmail,
-    phoneNumber: entry.fields.phoneNumber
+    siteName: entry?.fields?.siteName ?? "",
+    siteUrl: entry?.fields?.siteUrl ?? "",
+    defaultSeoTitle: entry?.fields?.defaultSeoTitle ?? "",
+    defaultSeoDescription: entry?.fields?.defaultSeoDescription ?? "",
+    defaultOgImage: mapAsset(entry?.fields?.defaultOgImage),
+    supportEmail: entry?.fields?.supportEmail ?? undefined,
+    phoneNumber: entry?.fields?.phoneNumber ?? undefined,
+    address: entry?.fields?.address ?? undefined
   };
 }

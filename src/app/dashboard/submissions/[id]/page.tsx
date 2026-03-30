@@ -2,23 +2,13 @@ import { notFound } from "next/navigation";
 
 import { Panel } from "@/components/ui/panel";
 import { requireDashboardPermission } from "@/lib/auth/session";
-import { prisma } from "@/lib/prisma";
+import { getDashboardSubmissionById } from "@/lib/dashboard-data";
 
 export default async function DashboardSubmissionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   await requireDashboardPermission("submissions:view");
   const { id } = await params;
 
-  const submission = await prisma.formSubmission.findUnique({
-    where: { id },
-    include: {
-      notes: {
-        orderBy: { createdAt: "desc" },
-        include: {
-          authorUser: true
-        }
-      }
-    }
-  });
+  const submission = await getDashboardSubmissionById(id);
 
   if (!submission) notFound();
 

@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 import { hasPermission } from "@/lib/auth/rbac";
+import { localSubmissions } from "@/lib/local-dashboard";
 import { prisma } from "@/lib/prisma";
+import { hasDatabaseConfig } from "@/lib/runtime";
 
 function toCsv(rows: Array<Record<string, string>>) {
   if (!rows.length) return "";
@@ -24,10 +26,14 @@ export async function GET() {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
-  const submissions = await prisma.formSubmission.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 500
-  });
+  const submissions = hasDatabaseConfig
+    ? await prisma.formSubmission
+        .findMany({
+          orderBy: { createdAt: "desc" },
+          take: 500
+        })
+        .catch(() => localSubmissions)
+    : localSubmissions;
 
   const csv = toCsv(
     submissions.map((submission) => ({

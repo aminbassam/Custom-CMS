@@ -1,19 +1,11 @@
 import { Panel } from "@/components/ui/panel";
 import { requireDashboardPermission } from "@/lib/auth/session";
-import { prisma } from "@/lib/prisma";
+import { getDashboardRoles } from "@/lib/dashboard-data";
 
 export default async function DashboardRolesPage() {
   await requireDashboardPermission("roles:manage");
 
-  const roles = await prisma.role.findMany({
-    include: {
-      rolePermissions: {
-        include: {
-          permission: true
-        }
-      }
-    }
-  });
+  const roles = await getDashboardRoles();
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">

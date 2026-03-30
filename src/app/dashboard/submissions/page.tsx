@@ -1,16 +1,14 @@
+import type { Route } from "next";
 import Link from "next/link";
 
 import { requireDashboardPermission } from "@/lib/auth/session";
-import { prisma } from "@/lib/prisma";
 import { Panel } from "@/components/ui/panel";
+import { getDashboardSubmissions } from "@/lib/dashboard-data";
 
 export default async function DashboardSubmissionsPage() {
   await requireDashboardPermission("submissions:view");
 
-  const submissions = await prisma.formSubmission.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 25
-  });
+  const submissions = await getDashboardSubmissions();
 
   return (
     <Panel>
@@ -34,7 +32,7 @@ export default async function DashboardSubmissionsPage() {
             {submissions.map((submission) => (
               <tr key={submission.id}>
                 <td className="py-4">
-                  <Link href={`/dashboard/submissions/${submission.id}`} className="font-medium text-ink">
+                  <Link href={`/dashboard/submissions/${submission.id}` as Route} className="font-medium text-ink">
                     {submission.name}
                   </Link>
                 </td>

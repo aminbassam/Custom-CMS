@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
@@ -5,6 +6,7 @@ import { createActivityLog, createAuditEvent } from "@/lib/security/audit";
 import { getClientIp, assertAllowedOrigin } from "@/lib/security/request";
 import { rateLimit } from "@/lib/security/rate-limit";
 import { contactFormSchema } from "@/lib/validators/contact";
+import { hasDatabaseConfig } from "@/lib/runtime";
 
 export async function POST(request: Request) {
   try {
@@ -34,20 +36,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const submission = await prisma.formSubmission.create({
-    data: {
-      source: "website",
-      formType: "contact",
-      name: parsed.data.name,
-      email: parsed.data.email,
-      phone: parsed.data.phone || null,
-      company: parsed.data.company || null,
-      message: parsed.data.message,
-      metadata: {
-        referrer: request.headers.get("referer")
-      }
-    }
-  });
+  const submission = hasDatabaseConfig
+    ? await prisma.formSubmission.create({
+        data: {
+          source: "website",
+          formType: "contact",
+          name: parsed.data.name,
+          email: parsed.data.email,
+          phone: parsed.data.phone || null,
+          company: parsed.data.company || null,
+          message: parsed.data.message,
+          metadata: {
+            referrer: request.headers.get("referer")
+          }
+        }
+      })
+    : {
+        id: crypto.randomUUID(),
+        email: parsed.data.email
+      };
 
   await Promise.all([
     createAuditEvent({

@@ -1,20 +1,11 @@
 import { Panel } from "@/components/ui/panel";
 import { requireDashboardPermission } from "@/lib/auth/session";
-import { prisma } from "@/lib/prisma";
+import { getDashboardUsers } from "@/lib/dashboard-data";
 
 export default async function DashboardUsersPage() {
   await requireDashboardPermission("users:view");
 
-  const users = await prisma.user.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      roles: {
-        include: {
-          role: true
-        }
-      }
-    }
-  });
+  const users = await getDashboardUsers();
 
   return (
     <Panel>

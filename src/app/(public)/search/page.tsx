@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import Link from "next/link";
 
 import { getBlogPosts, getServices } from "@/lib/contentful/api";
@@ -17,15 +18,24 @@ export default async function SearchPage({
   const { q = "" } = await searchParams;
   const [services, posts] = await Promise.all([getServices().catch(() => []), getBlogPosts().catch(() => [])]);
   const query = q.toLowerCase();
+  type SearchResult = { href: Route; title: string; excerpt: string };
 
-  const results = query
+  const results: SearchResult[] = query
     ? [
         ...services
           .filter((service) => service.title.toLowerCase().includes(query) || service.summary.toLowerCase().includes(query))
-          .map((service) => ({ href: `/services/${service.slug}`, title: service.title, excerpt: service.summary })),
+          .map((service) => ({
+            href: `/services/${service.slug}` as Route,
+            title: service.title,
+            excerpt: service.summary
+          })),
         ...posts
           .filter((post) => post.title.toLowerCase().includes(query) || post.excerpt.toLowerCase().includes(query))
-          .map((post) => ({ href: `/blog/${post.slug}`, title: post.title, excerpt: post.excerpt }))
+          .map((post) => ({
+            href: `/blog/${post.slug}` as Route,
+            title: post.title,
+            excerpt: post.excerpt
+          }))
       ]
     : [];
 

@@ -1,8 +1,13 @@
+import type { Route } from "next";
 import Link from "next/link";
 
 import type { ContentBlock } from "@/lib/contentful/types";
 import { Panel } from "@/components/ui/panel";
 import { RichText } from "@/components/content/rich-text";
+
+function isInternalRoute(href: string): href is Route {
+  return href.startsWith("/") && !href.startsWith("//");
+}
 
 export function BlockRenderer({ blocks }: { blocks: ContentBlock[] }) {
   return (
@@ -58,12 +63,23 @@ export function BlockRenderer({ blocks }: { blocks: ContentBlock[] }) {
               <Panel key={block.id} className="bg-clay text-white">
                 <h2 className="font-display text-3xl font-semibold">{block.headline}</h2>
                 {block.body ? <p className="mt-3 max-w-2xl text-base text-white/85">{block.body}</p> : null}
-                <Link
-                  href={block.buttonUrl}
-                  className="mt-6 inline-flex rounded-full bg-white px-5 py-3 text-sm font-semibold text-clay"
-                >
-                  {block.buttonLabel}
-                </Link>
+                {isInternalRoute(block.buttonUrl) ? (
+                  <Link
+                    href={block.buttonUrl}
+                    className="mt-6 inline-flex rounded-full bg-white px-5 py-3 text-sm font-semibold text-clay"
+                  >
+                    {block.buttonLabel}
+                  </Link>
+                ) : (
+                  <a
+                    href={block.buttonUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-6 inline-flex rounded-full bg-white px-5 py-3 text-sm font-semibold text-clay"
+                  >
+                    {block.buttonLabel}
+                  </a>
+                )}
               </Panel>
             );
           case "FaqGroupBlock":
