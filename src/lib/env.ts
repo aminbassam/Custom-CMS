@@ -51,9 +51,9 @@ export const missingProductionEnv = [
 export const env = {
   NODE_ENV: rawEnv.NODE_ENV,
   APP_NAME: rawEnv.APP_NAME ?? "Custom CMS Website",
-  APP_URL: rawEnv.APP_URL ?? "http://localhost:3000",
+  APP_URL: rawEnv.APP_URL ?? "http://localhost:3017",
   DATABASE_URL: rawEnv.DATABASE_URL,
-  NEXTAUTH_URL: rawEnv.NEXTAUTH_URL ?? rawEnv.APP_URL ?? "http://localhost:3000",
+  NEXTAUTH_URL: rawEnv.NEXTAUTH_URL ?? rawEnv.APP_URL ?? "http://localhost:3017",
   NEXTAUTH_SECRET: rawEnv.NEXTAUTH_SECRET ?? "development-only-nextauth-secret-please-change",
   CONTENTFUL_SPACE_ID: rawEnv.CONTENTFUL_SPACE_ID,
   CONTENTFUL_ENVIRONMENT: rawEnv.CONTENTFUL_ENVIRONMENT ?? "master",

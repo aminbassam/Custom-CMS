@@ -172,6 +172,7 @@ Notes:
 - For a real connected environment, configure PostgreSQL, Contentful, and Auth.js secrets before deployment
 - The app automatically falls back to local content when Contentful is not configured
 - The dashboard falls back to demo data when PostgreSQL is not configured
+- The local default app URL and auth URL now use `http://localhost:3017`
 
 ## Local Fallback Mode
 
@@ -182,6 +183,8 @@ npm install
 npm run prisma:generate
 npm run dev
 ```
+
+Default local URL: `http://localhost:3017`
 
 What you get in fallback mode:
 

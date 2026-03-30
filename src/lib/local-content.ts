@@ -59,7 +59,7 @@ function richText(sections: Array<{ type: "heading" | "paragraph"; text: string 
 
 export const localSiteSettings: SiteSettings = {
   siteName: "Northstar Studio",
-  siteUrl: "http://localhost:3000",
+  siteUrl: "http://localhost:3017",
   defaultSeoTitle: "Northstar Studio | Web, SEO, and Brand Growth",
   defaultSeoDescription:
     "A polished Next.js + Contentful website with an internal dashboard for leads, users, media helpers, and site operations.",

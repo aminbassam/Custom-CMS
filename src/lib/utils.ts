@@ -6,5 +6,5 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function absoluteUrl(path = "/") {
-  return new URL(path, process.env.APP_URL ?? "http://localhost:3000").toString();
+  return new URL(path, process.env.APP_URL ?? "http://localhost:3017").toString();
 }
